@@ -1,0 +1,89 @@
+{% load staticfiles %}
+
+<html>
+<head>
+	<title>Page Title: {{zone_name}}</title>
+<style>
+
+.row1 {
+    background-color: #BBBBBB;
+    text-align: left;
+
+    padding-bottom: 10px;
+    overflow: auto;
+}
+.row2 {
+	background-color: #DDDDDD;
+    text-align: left;
+
+    padding-bottom: 10px;
+    overflow: auto;
+}
+.rowfield {
+	float: left;
+	padding: 5px;
+}
+
+.pad15 {
+	padding-bottom: 1.5em;
+}
+
+select[readonly]{
+    background: #eee;
+    cursor:no-drop;
+}
+
+select[readonly] option{
+    display:none;
+}
+
+</style>
+</head>
+<body>
+	<h3>formset for zone: {{zone_name}}</h3>
+<div class="messages">
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+</div>
+
+<form method="post">{% csrf_token %}
+<div class="pad15">
+
+
+	<div>{{ formset.management_form }}</div>
+	<div>{{ formset.non_form_errors.as_ul }}</div>
+
+	{% for form in formset.forms %}
+        <div class="resources-formset {% cycle 'row1' 'row2' %}">
+			  {% for field in form.visible_fields %}
+			    {% if forloop.first %}
+			      {% for hidden in form.hidden_fields %}
+			      {{ hidden }}
+			      {% endfor %}
+			    {% endif %}
+			    <div class="rowfield">
+			      {{ field.errors.as_ul }}
+			      {{ field }}
+			    </div>
+			  {% endfor %}
+
+        </div>
+    {% endfor %}
+ </div>
+<div><input type="submit" value="Update zone resources" class="button"/></div>
+</form>
+
+<!-- Include formset plugin - including jQuery dependency -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/jquery.formset.js' %}"></script>
+<script>
+    $('.resources-formset').formset({
+        addText: 'add resource',
+        deleteText: 'remove'
+    });
+</script>
+</body>
+</html>
